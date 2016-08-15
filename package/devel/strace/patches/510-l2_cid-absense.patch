@@ -1,6 +1,6 @@
 --- a/net.c
 +++ b/net.c
-@@ -253,7 +253,7 @@
+@@ -249,7 +249,7 @@
  	case AF_BLUETOOTH:
  		tprintf("{sco_bdaddr=%02X:%02X:%02X:%02X:%02X:%02X} or "
  			"{rc_bdaddr=%02X:%02X:%02X:%02X:%02X:%02X, rc_channel=%d} or "
@@ -9,7 +9,7 @@
  			"{hci_dev=htobs(%d)}",
  			addr->sco.sco_bdaddr.b[0], addr->sco.sco_bdaddr.b[1],
  			addr->sco.sco_bdaddr.b[2], addr->sco.sco_bdaddr.b[3],
-@@ -265,7 +265,7 @@
+@@ -261,7 +261,7 @@
  			btohs(addr->l2.l2_psm), addr->l2.l2_bdaddr.b[0],
  			addr->l2.l2_bdaddr.b[1], addr->l2.l2_bdaddr.b[2],
  			addr->l2.l2_bdaddr.b[3], addr->l2.l2_bdaddr.b[4],

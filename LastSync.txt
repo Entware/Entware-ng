@@ -1,8 +1,7 @@
-commit 558b38f4b8e615fb5262c94dad7db2071e394ac1
-Merge: 99ddb65 019be77
-Author: Zoltan Herpai <wigyori@uid0.hu>
-Date:   Mon Jul 25 13:32:53 2016 +0200
+commit ce116bc6f997d8d6e6b976cacce5d4c60d705fc6
+Author: Imre Kaloz <kaloz@openwrt.org>
+Date:   Tue Oct 18 11:42:06 2016 +0200
 
-    Merge pull request #38 from qinfengling/orangepi2
+    mvebu: bugfixes for rango
 
-    sunxi: add support for Orange Pi 2 (H3)
+    Signed-off-by: Imre Kaloz <kaloz@openwrt.org>

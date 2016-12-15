@@ -64,7 +64,7 @@ else
   STAMP_PREPARED=$(PKG_BUILD_DIR)/.prepared$(if $(QUILT)$(DUMP),,_$(shell $(call find_md5,${CURDIR} $(PKG_FILE_DEPENDS),))$(call confvar,$(PKG_PREPARED_DEPENDS)))
 endif
 STAMP_CONFIGURED=$(PKG_BUILD_DIR)/.configured$(if $(DUMP),,_$(call confvar,$(PKG_CONFIG_DEPENDS)))
-STAMP_CONFIGURED_WILDCARD=$(patsubst %_$(call confvar,$(PKG_CONFIG_DEPENDS)),%_*,$(STAMP_CONFIGURED))
+STAMP_CONFIGURED_WILDCARD=$(PKG_BUILD_DIR)/.configured_*
 STAMP_BUILT:=$(PKG_BUILD_DIR)/.built
 STAMP_INSTALLED:=$(STAGING_DIR)/stamp/.$(PKG_DIR_NAME)$(if $(BUILD_VARIANT),.$(BUILD_VARIANT),)_installed
 
@@ -167,7 +167,7 @@ define Build/DefaultTargets
 	)
 
   $(STAMP_PREPARED) : export PATH=$$(TARGET_PATH_PKG)
-  $(STAMP_PREPARED):
+  $(STAMP_PREPARED): $(STAMP_PREPARED_DEPENDS)
 	@-rm -rf $(PKG_BUILD_DIR)
 	@mkdir -p $(PKG_BUILD_DIR)
 	$(foreach hook,$(Hooks/Prepare/Pre),$(call $(hook))$(sep))
@@ -176,7 +176,7 @@ define Build/DefaultTargets
 	touch $$@
 
   $(call Build/Exports,$(STAMP_CONFIGURED))
-  $(STAMP_CONFIGURED): $(STAMP_PREPARED)
+  $(STAMP_CONFIGURED): $(STAMP_PREPARED) $(STAMP_CONFIGURED_DEPENDS)
 	$(CleanStaging)
 	$(foreach hook,$(Hooks/Configure/Pre),$(call $(hook))$(sep))
 	$(Build/Configure)
@@ -185,7 +185,7 @@ define Build/DefaultTargets
 	touch $$@
 
   $(call Build/Exports,$(STAMP_BUILT))
-  $(STAMP_BUILT): $(STAMP_CONFIGURED)
+  $(STAMP_BUILT): $(STAMP_CONFIGURED) $(STAMP_BUILT_DEPENDS)
 	$(foreach hook,$(Hooks/Compile/Pre),$(call $(hook))$(sep))
 	$(Build/Compile)
 	$(foreach hook,$(Hooks/Compile/Post),$(call $(hook))$(sep))
@@ -294,7 +294,7 @@ Build/DistCheck=$(call Build/DistCheck/Default,)
 prepare-package-install:
 	@mkdir -p $(PKG_INFO_DIR)
 	@touch $(PKG_INSTALL_STAMP).clean
-	@echo "$(filter-out essential,$(PKG_FLAGS))" > $(PKG_INSTALL_STAMP).flags
+	@echo "$(filter-out essential nonshared,$(PKG_FLAGS))" > $(PKG_INSTALL_STAMP).flags
 
 $(PACKAGE_DIR):
 	mkdir -p $@

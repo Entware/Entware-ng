@@ -1,7 +1,17 @@
-commit ce116bc6f997d8d6e6b976cacce5d4c60d705fc6
-Author: Imre Kaloz <kaloz@openwrt.org>
-Date:   Tue Oct 18 11:42:06 2016 +0200
+Sync with LEDE
 
-    mvebu: bugfixes for rango
+commit 7c47f43fe650309e6a2383c99273dc1bde367bc1
+Author: Hauke Mehrtens <hauke@hauke-m.de>
+Date:   Sun Dec 4 19:03:48 2016 +0100
 
-    Signed-off-by: Imre Kaloz <kaloz@openwrt.org>
+    lantiq: falcon: remove bootargs-append
+
+trunk/packages
+
+commit fb237477fd1e7801e4877f9fe1ea7bc1ec16dd99
+Author: Felix Fietkau <nbd@nbd.name>
+Date:   Thu Dec 15 13:02:31 2016 +0100
+
+    mt76: update to the latest version, fixes a build error on some platforms
+    
+    Signed-off-by: Felix Fietkau <nbd@nbd.name>

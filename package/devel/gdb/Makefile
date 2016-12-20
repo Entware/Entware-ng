@@ -8,12 +8,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=gdb
-PKG_VERSION:=7.11
+PKG_VERSION:=7.11.1
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
 PKG_SOURCE_URL:=@GNU/gdb
-PKG_MD5SUM:=b5c784685e1cde65ba135feea86b6d75
+PKG_MD5SUM:=5aa71522e488e358243917967db87476
 
 PKG_BUILD_PARALLEL:=1
 PKG_INSTALL:=1
@@ -59,11 +59,6 @@ CONFIGURE_ARGS+= \
 
 CONFIGURE_VARS+= \
 	ac_cv_search_tgetent="$(TARGET_LDFLAGS) -lncurses -lreadline"
-
-
-
-# if binutils 2.4 are compiled before gdb - then ansidecl.h in opt/include (from binutils) will make compilation fail
-# no -I or iquote options helped. So we rename the file before compilation and rename back after
 
 define Build/Compile
 	+$(MAKE) $(PKG_JOBS) -C $(PKG_BUILD_DIR) \

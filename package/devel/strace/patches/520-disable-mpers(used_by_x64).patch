@@ -1,0 +1,22 @@
+This patch is needed only for intel feeds and entware-ng.
+It is not needed in entware-3x
+--- a/configure
++++ b/configure
+@@ -10530,7 +10530,7 @@
+ else
+   if CC="$CC" CPP="$CPP" CPPFLAGS="$CPPFLAGS" \
+ 			    $srcdir/mpers_test.sh m32; then
+-				st_cv_m32_mpers=yes
++				st_cv_m32_mpers=no
+ 			 else
+ 				st_cv_m32_mpers=no
+ 			 fi
+@@ -10858,7 +10858,7 @@
+ else
+   if CC="$CC" CPP="$CPP" CPPFLAGS="$CPPFLAGS" \
+ 			    $srcdir/mpers_test.sh mx32; then
+-				st_cv_mx32_mpers=yes
++				st_cv_mx32_mpers=no
+ 			 else
+ 				st_cv_mx32_mpers=no
+ 			 fi

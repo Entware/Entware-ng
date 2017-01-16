@@ -42,15 +42,6 @@ TARGET_CFLAGS += -std=gnu99
 CONFIGURE_ARGS = --with-includes=$(LINUX_DIR)
 MAKE_FLAGS += prefix=/opt/ sysconfdif=/opt/etc/
 
-define Build/Compiled
-	$(MAKE) -C $(PKG_BUILD_DIR) \
-		CC="$(TARGET_CC)" \
-		USERCOMPILE="$(TARGET_CFLAGS)" \
-		prefix=/opt/ \
-		sysconfdir=/opt/etc/ \
-		 
-endef
-
 define Package/mrouted/install
 	$(INSTALL_DIR) $(1)/opt/etc/
 	$(INSTALL_CONF) $(PKG_BUILD_DIR)/mrouted.conf $(1)/opt/etc/

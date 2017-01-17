@@ -1,0 +1,10 @@
+#!/bin/sh
+
+ENABLED=no
+PROCS=mrouted
+ARGS="-c /opt/etc/mrouted.conf"
+PREARGS=""
+DESC=$PROCS
+PATH=/opt/sbin:/opt/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
+. /opt/etc/init.d/rc.func

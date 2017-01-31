@@ -5,8 +5,15 @@
 # See /LICENSE for more information.
 #
 
+ifneq ($(filter check,$(MAKECMDGOALS)),)
+CHECK:=1
+DUMP:=1
+endif
+
 ifeq ($(__target_inc),)
-  include $(INCLUDE_DIR)/target.mk
+  ifndef CHECK
+    include $(INCLUDE_DIR)/target.mk
+  endif
 endif
 
 ifeq ($(DUMP),1)
@@ -148,6 +155,7 @@ define KernelPackage
   $(eval $(call KernelPackage/Defaults))
   $(eval $(call KernelPackage/$(1)))
   $(eval $(call KernelPackage/$(1)/$(BOARD)))
+  $(eval $(call KernelPackage/$(1)/$(BOARD)/$(if $(SUBTARGET),$(SUBTARGET),generic)))
 
   define Package/kmod-$(1)
     TITLE:=$(TITLE)
@@ -159,6 +167,7 @@ define KernelPackage
     PKGFLAGS:=$(PKGFLAGS)
     $(call KernelPackage/$(1))
     $(call KernelPackage/$(1)/$(BOARD))
+    $(call KernelPackage/$(1)/$(BOARD)/$(if $(SUBTARGET),$(SUBTARGET),generic))
   endef
 
   ifdef KernelPackage/$(1)/conffiles

@@ -8,16 +8,16 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=busybox
-PKG_VERSION:=1.25.1
-PKG_RELEASE:=2
+PKG_VERSION:=1.26.2
+PKG_RELEASE:=1
 PKG_FLAGS:=essential
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.bz2
 PKG_SOURCE_URL:=https://www.busybox.net/downloads \
 		http://sources.buildroot.net
-PKG_MD5SUM:=4f4c5de50b479b11ff636d7d8eb902a2
+PKG_HASH:=da3e44913fc1a9c9b7c5337ea5292da518683cbff32be630777f565d6036af16
 
-PKG_BUILD_DEPENDS:=BUSYBOX_CONFIG_PAM:libpam
+PKG_BUILD_DEPENDS:=BUSYBOX_USE_LIBRPC:librpc BUSYBOX_CONFIG_PAM:libpam
 PKG_BUILD_PARALLEL:=1
 PKG_CHECK_FORMAT_SECURITY:=0
 
@@ -27,7 +27,7 @@ PKG_LICENSE_FILES:=LICENSE archival/libarchive/bz/LICENSE
 include $(INCLUDE_DIR)/package.mk
 
 ifeq ($(DUMP),)
-  STAMP_CONFIGURED:=$(strip $(STAMP_CONFIGURED))_$(shell $(SH_FUNC) grep '^CONFIG_BUSYBOX_' $(TOPDIR)/.config | md5s)
+  STAMP_CONFIGURED:=$(strip $(STAMP_CONFIGURED))_$(shell grep '^CONFIG_BUSYBOX_' $(TOPDIR)/.config | mkhash md5)
 endif
 
 ifneq ($(findstring c,$(OPENWRT_VERBOSE)),)
@@ -42,7 +42,7 @@ define Package/busybox
   MAINTAINER:=Felix Fietkau <nbd@nbd.name>
   TITLE:=Core utilities for embedded Linux
   URL:=http://busybox.net/
-  DEPENDS:=+BUSYBOX_CONFIG_PAM:libpam
+  DEPENDS:=+BUSYBOX_USE_LIBRPC:librpc +BUSYBOX_CONFIG_PAM:libpam +BUSYBOX_CONFIG_NTPD:jsonfilter
   MENU:=1
 endef
 
@@ -76,6 +76,7 @@ LDLIBS:=m crypt
 ifdef CONFIG_BUSYBOX_USE_LIBRPC
   TARGET_CFLAGS += -I$(STAGING_DIR)/opt/include
   export LDFLAGS=$(TARGET_LDFLAGS)
+  LDLIBS += rpc
 endif
 
 ifdef CONFIG_BUSYBOX_CONFIG_PAM
@@ -112,7 +113,7 @@ endef
 
 define Package/busybox/install
 	$(INSTALL_DIR) $(1)/opt/{bin,sbin}
-	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/opt/bin/busybox $(1)/opt/bin/
+	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/opt/bin/busybox $(1)/opt/bin
 	chmod u+s $(1)/opt/bin/busybox
 	$(INSTALL_DIR) $(1)/opt/share
 	(cd $(PKG_INSTALL_DIR); \

@@ -37,12 +37,12 @@ MAKE_FLAGS += \
 
 
 define Build/InstallDev
-	$(INSTALL_DIR) $(1)/usr/include
+	$(INSTALL_DIR) $(1)/opt/include
 	$(CP)   $(PKG_BUILD_DIR)/argp.h \
-		$(1)/usr/include/
-	$(INSTALL_DIR) $(1)/usr/lib
+		$(1)/opt/include/
+	$(INSTALL_DIR) $(1)/opt/lib
 	$(CP)   $(PKG_BUILD_DIR)/libargp.a \
-		$(1)/usr/lib/
+		$(1)/opt/lib/
 endef
 
 $(eval $(call BuildPackage,argp-standalone))

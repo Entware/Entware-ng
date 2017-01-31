@@ -67,9 +67,9 @@ config OPKG_SUPPORT_MD5
 	Old opkg used md5s, new uses sha. This options enables understanding both while prefering sha.
 endef
 
-define Package/opkg/conffiles
-/opt/etc/opkg.conf
-endef
+#define Package/opkg/conffiles
+#/opt/etc/opkg.conf
+#endef
 
 TARGET_CFLAGS += -ffunction-sections -fdata-sections -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64
 EXTRA_CFLAGS += $(TARGET_CPPFLAGS)

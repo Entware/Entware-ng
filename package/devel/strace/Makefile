@@ -4,8 +4,8 @@
 # This is free software, licensed under the GNU General Public License v2.
 # See /LICENSE for more information.
 #
-
-# This update is from LEDE, not Openwrt!
+#
+# 4.15 and newer requres DM_* includes, which is absent in 2.6.22
 
 include $(TOPDIR)/rules.mk
 include $(INCLUDE_DIR)/kernel.mk

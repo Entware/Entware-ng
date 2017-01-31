@@ -21,7 +21,7 @@ PKG_RELEASE:=1c
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=@GNU/ncurses
-PKG_MD5SUM:=ee13d052e1ead260d7c28071f46eefb1
+PKG_HASH:=f551c24b30ce8bfb6e96d9f59b42fbea30fa3a6123384172f9e7284bcf647260
 
 PKG_LICENSE:=MIT
 PKG_LICENSE_FILES:=README
@@ -85,9 +85,10 @@ CONFIGURE_ARGS += \
 	--with-normal \
 	--with-shared \
 	--with-terminfo-dirs=/opt/share/terminfo \
+	--with-default-terminfo-dir=/opt/share/terminfo \
+	--with-pkg-config-libdir=/opt/lib/pkgconfig \
 	--enable-widec \
-	--with-build-cppflags=-D_GNU_SOURCE \
-	--with-default-terminfo-dir=/opt/share/terminfo
+	--with-build-cppflags=-D_GNU_SOURCE
 
 HOST_CONFIGURE_ARGS += \
 	--without-cxx \

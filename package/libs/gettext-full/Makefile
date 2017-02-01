@@ -5,8 +5,6 @@
 # See /LICENSE for more information.
 #
 
-# Small Host configure changes are from LEDE
-
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=gettext-full

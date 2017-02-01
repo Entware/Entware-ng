@@ -49,8 +49,7 @@ TARGET_CFLAGS += \
 CONFIGURE_VARS += \
 	ac_cv_linux_vers=$(LINUX_VERSION) \
 	ac_cv_header_libusb_1_0_libusb_h=no \
-	ac_cv_netfilter_can_compile=no \
-	ac_cv_header_linux_wireless_h=yes
+	ac_cv_netfilter_can_compile=no
 
 
 CONFIGURE_ARGS += \
@@ -72,7 +71,7 @@ CONFIGURE_ARGS += \
 endif
 
 MAKE_FLAGS += \
-	CCOPT="$(TARGET_CFLAGS)  -D_DEFAULT_SOURCE -I$(STAGING_DIR)/opt/include"
+	CCOPT="$(TARGET_CFLAGS) -I$(BUILD_DIR)/linux/include"
 
 define Build/Configure
 	$(call Build/Configure/Default)

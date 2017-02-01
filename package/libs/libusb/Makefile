@@ -4,6 +4,7 @@
 # This is free software, licensed under the GNU General Public License v2.
 # See /LICENSE for more information.
 #
+# Additional patch for TFD_NONBLOCK compatibility
 
 include $(TOPDIR)/rules.mk
 

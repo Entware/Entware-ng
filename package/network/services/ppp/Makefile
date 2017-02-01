@@ -97,7 +97,7 @@ endef
 
 define Package/ppp-mod-pppol2tp
 $(call Package/ppp/Default)
-  DEPENDS:=@(PACKAGE_ppp||PACKAGE_ppp-multilink) 
+  DEPENDS:=@(PACKAGE_ppp||PACKAGE_ppp-multilink)
   TITLE:=PPPoL2TP plugin
 endef
 
@@ -156,7 +156,7 @@ define Package/pppstats/description
 This package contains an utility to report PPP statistics.
 endef
 
-# for 2.6 kernels ????
+# for 2.6 kernels
 LINUX_UAPI_DIR=""
 
 

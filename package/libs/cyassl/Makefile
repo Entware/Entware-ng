@@ -7,15 +7,13 @@
 
 include $(TOPDIR)/rules.mk
 
-# This update is from LEDE, not Openwrt
-
 PKG_NAME:=wolfssl
 PKG_VERSION:=3.10.0
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).zip
 PKG_SOURCE_URL:=https://www.wolfssl.com/
-PKG_MD5SUM:=66f7f2a8b8ee37d6b4beab3cb0dcb6a6980fd4674373bfd3bf1214b9d0d2c02e
+PKG_HASH:=66f7f2a8b8ee37d6b4beab3cb0dcb6a6980fd4674373bfd3bf1214b9d0d2c02e
 
 PKG_FIXUP:=libtool
 PKG_INSTALL:=1

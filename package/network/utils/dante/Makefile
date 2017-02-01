@@ -15,7 +15,7 @@ PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=http://www.inet.no/dante/files/
 PKG_HASH:=b6d232bd6fefc87d14bf97e447e4fcdeef4b28b16b048d804b50b48f261c4f53
 
-PKG_MAINTAINER:=Jo-Philipp Wich <jow@openwrt.org>
+PKG_MAINTAINER:=Jo-Philipp Wich <jo@mein.io>
 PKG_LICENSE:=BSD-4-Clause
 
 PKG_FIXUP:=autoreconf

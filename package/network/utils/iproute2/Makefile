@@ -32,12 +32,12 @@ define Package/iproute2/Default
   VARIANT:=$(1)
 endef
 
-define Package/ip
+define Package/ip-tiny
 $(call Package/iproute2/Default,tiny,Minimal)
   CONFLICTS:=ip-full
 endef
 
-Package/ip-full=$(call Package/iproute2/Default,full,Full)
+Package/ip-full:=$(call Package/iproute2/Default,full,Full)
 
 define Package/tc
 $(call Package/iproute2/Default)
@@ -101,7 +101,7 @@ define Build/InstallDev
 	$(CP) $(PKG_BUILD_DIR)/lib/libnetlink.a $(1)/opt/lib/
 endef
 
-define Package/ip/install
+define Package/ip-tiny/install
 	$(INSTALL_DIR) $(1)/opt/bin
 	$(INSTALL_DIR) $(1)/opt/etc/iproute2
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/ip/ip $(1)/opt/bin/
@@ -143,7 +143,7 @@ define Package/nstat/install
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/misc/nstat $(1)/opt/sbin/
 endef
 
-$(eval $(call BuildPackage,ip))
+$(eval $(call BuildPackage,ip-tiny))
 $(eval $(call BuildPackage,ip-full))
 $(eval $(call BuildPackage,tc))
 $(eval $(call BuildPackage,genl))

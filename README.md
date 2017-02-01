@@ -1,8 +1,8 @@
 ## Entware-ng
 
-This is software repository for network attached storages, routers and other embedded devices.
+This is a software repository for network attached storages, routers and other embedded devices.
 
-Browse through ~1800 packages for different platforms:
+Browse through ~2000 packages for different platforms:
 
 * armv5 - http://pkg.entware.net/binaries/armv5/Packages.html
 * armv7 - http://pkg.entware.net/binaries/armv7/Packages.html

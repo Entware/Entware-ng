@@ -4,6 +4,7 @@
 # This is free software, licensed under the GNU General Public License v2.
 # See /LICENSE for more information.
 #
+# no-ssl3-method excluded to keep compatibility with existing code
 
 include $(TOPDIR)/rules.mk
 
@@ -120,7 +121,7 @@ ifndef CONFIG_OPENSSL_WITH_EC2M
 endif
 
 ifndef CONFIG_OPENSSL_WITH_SSL3
-  OPENSSL_OPTIONS += no-ssl3 no-ssl3-method
+  OPENSSL_OPTIONS += no-ssl3
 endif
 
 ifndef CONFIG_OPENSSL_HARDWARE_SUPPORT

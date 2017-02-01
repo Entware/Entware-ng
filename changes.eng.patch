@@ -1,0 +1,499 @@
+This patch reflects differences between LEDE and Entware-ng Buildroots as it was in 2017, January.
+
+Patch doesn't reflect some changes:
+
+* /target was wiped out and replaced by ours (see https://github.com/Entware-ng/Entware-ng/tree/master/target/linux)
+* /tools: gobin, go-dep, go-src was added to provide Golang cross-compilation (see https://github.com/Entware-ng/entware-go)
+* /tools/wl500g-kernel pseudo-tool was added as part of MIPSEL toolchain (from here https://github.com/wl500g/wl500g/tree/master/linux/linux-2.6.22.19)
+* /toolchain folder was changed to reflect tools we are using (uClibc-ng for MIPSEL, Glibc for other targets and so on)
+* /package contains usr->opt changes mostly. All kernel-, boot- and image-related packages are excluded as we are firmware independent project.
+
+diff -ur LEDE/Config.in Entware-ng/Config.in
+--- LEDE/Config.in
++++ Entware-ng/Config.in
+@@ -4,7 +4,7 @@
+ # See /LICENSE for more information.
+ #
+ 
+-mainmenu "LEDE Configuration"
++mainmenu "Entware-ng Configuration"
+ 
+ config MODULES
+ 	option modules
+@@ -17,7 +17,7 @@
+ 
+ source "target/Config.in"
+ 
+-source "config/Config-images.in"
++#source "config/Config-images.in"
+ 
+ source "config/Config-build.in"
+ 
+@@ -25,10 +25,10 @@
+ 
+ source "toolchain/Config.in"
+ 
+-source "target/imagebuilder/Config.in"
++#source "target/imagebuilder/Config.in"
+ 
+-source "target/sdk/Config.in"
++#source "target/sdk/Config.in"
+ 
+-source "target/toolchain/Config.in"
++#source "target/toolchain/Config.in"
+ 
+ source "tmp/.config-package.in"
+Only in Entware-ng: configs
+Only in Entware-ng: feeds.conf
+diff -ur LEDE/include/autotools.mk Entware-ng/include/autotools.mk
+--- LEDE/include/autotools.mk
++++ Entware-ng/include/autotools.mk
+@@ -75,7 +75,7 @@
+   $(strip $(call autoreconf, \
+     $(PKG_BUILD_DIR), $(PKG_REMOVE_FILES), \
+     $(PKG_AUTOMAKE_PATHS), $(PKG_LIBTOOL_PATHS), \
+-    $(STAGING_DIR)/host/share/aclocal $(STAGING_DIR_HOSTPKG)/share/aclocal $(STAGING_DIR)/usr/share/aclocal $(PKG_MACRO_PATHS)))
++    $(STAGING_DIR)/host/share/aclocal $(STAGING_DIR_HOSTPKG)/share/aclocal $(STAGING_DIR)/opt/share/aclocal $(PKG_MACRO_PATHS)))
+ endef
+ 
+ define patch_libtool_target
+diff -ur LEDE/include/cmake.mk Entware-ng/include/cmake.mk
+--- LEDE/include/cmake.mk
++++ Entware-ng/include/cmake.mk
+@@ -33,7 +33,7 @@
+ CMAKE_NM:=$(call cmake_tool,$(TARGET_NM))
+ CMAKE_RANLIB:=$(call cmake_tool,$(TARGET_RANLIB))
+ 
+-CMAKE_FIND_ROOT_PATH:=$(STAGING_DIR)/usr;$(TOOLCHAIN_DIR)$(if $(CONFIG_EXTERNAL_TOOLCHAIN),;$(CONFIG_TOOLCHAIN_ROOT))
++CMAKE_FIND_ROOT_PATH:=$(STAGING_DIR)/opt;$(TOOLCHAIN_DIR)$(if $(CONFIG_EXTERNAL_TOOLCHAIN),;$(CONFIG_TOOLCHAIN_ROOT))
+ CMAKE_HOST_FIND_ROOT_PATH:=$(STAGING_DIR)/host;$(STAGING_DIR_HOSTPKG);$(STAGING_DIR_HOST)
+ CMAKE_SHARED_LDFLAGS:=-Wl,-Bsymbolic-functions
+ 
+@@ -67,7 +67,7 @@
+ 			-DCMAKE_FIND_ROOT_PATH_MODE_LIBRARY=ONLY \
+ 			-DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=ONLY \
+ 			-DCMAKE_STRIP=: \
+-			-DCMAKE_INSTALL_PREFIX=/usr \
++			-DCMAKE_INSTALL_PREFIX=/opt \
+ 			-DDL_LIBRARY=$(STAGING_DIR) \
+ 			-DCMAKE_PREFIX_PATH=$(STAGING_DIR) \
+ 			-DCMAKE_SKIP_RPATH=TRUE  \
+diff -ur LEDE/include/kernel-build.mk Entware-ng/include/kernel-build.mk
+--- LEDE/include/kernel-build.mk
++++ Entware-ng/include/kernel-build.mk
+@@ -28,12 +28,11 @@
+ endef
+ 
+ define Kernel/CompileModules
+-	$(call Kernel/CompileModules/Default)
++	@echo "Skipping Kernel/CompileModules"
+ endef
+ 
+ define Kernel/CompileImage
+-	$(call Kernel/CompileImage/Default)
+-	$(call Kernel/CompileImage/Initramfs)
++	@echo "Skipping Kernel/CompileImage"
+ endef
+ 
+ define Kernel/Clean
+diff -ur LEDE/include/kernel-version.mk Entware-ng/include/kernel-version.mk
+--- LEDE/include/kernel-version.mk
++++ Entware-ng/include/kernel-version.mk
+@@ -2,11 +2,11 @@
+ 
+ LINUX_RELEASE?=1
+ 
+-LINUX_VERSION-3.18 = .43
+-LINUX_VERSION-4.4 = .45
+-
+-LINUX_KERNEL_HASH-3.18.43 = 1236e8123a6ce537d5029232560966feed054ae31776fe8481dd7d18cdd5492c
+-LINUX_KERNEL_HASH-4.4.45 = 22fb59247746a3dd109df6d1485a9972382507a3c0040ac33371b3fd2a021741
++LINUX_VERSION-2.6.36 = .4
++LINUX_VERSION-2.6.32 = .68
++LINUX_VERSION-2.6.22 = .19
++LINUX_KERNEL_HASH-2.6.36.4 = 70d124743041974e1220fb39465627ded1df0fdd46da6cd74f6e3da414194d03
++LINUX_KERNEL_HASH-2.6.32.68 = f56ca7f9ae41a80b37b42a9aa6367d6b054cde8a32ef3585a8b7b1fecd1c399e
+ 
+ ifdef KERNEL_PATCHVER
+   LINUX_VERSION:=$(KERNEL_PATCHVER)$(strip $(LINUX_VERSION-$(KERNEL_PATCHVER)))
+diff -ur LEDE/include/nls.mk Entware-ng/include/nls.mk
+--- LEDE/include/nls.mk
++++ Entware-ng/include/nls.mk
+@@ -7,18 +7,18 @@
+ 
+ # iconv full
+ ifeq ($(CONFIG_BUILD_NLS),y)
+-	ICONV_PREFIX:=$(STAGING_DIR)/usr/lib/libiconv-full
++	ICONV_PREFIX:=$(STAGING_DIR)/opt/lib/libiconv-full
+ 	ICONV_FULL:=1
+ 
+-	INTL_PREFIX:=$(STAGING_DIR)/usr/lib/libintl-full
++	INTL_PREFIX:=$(STAGING_DIR)/opt/lib/libintl-full
+ 	INTL_FULL:=1
+ 
+ # iconv stub
+ else
+-	ICONV_PREFIX:=$(STAGING_DIR)/usr/lib/libiconv-stub
++	ICONV_PREFIX:=$(STAGING_DIR)/opt/lib/libiconv-stub
+ 	ICONV_FULL:=
+ 
+-	INTL_PREFIX:=$(STAGING_DIR)/usr/lib/libintl-stub
++	INTL_PREFIX:=$(STAGING_DIR)/opt/lib/libintl-stub
+ 	INTL_FULL:=
+ endif
+ 
+diff -ur LEDE/include/package-defaults.mk Entware-ng/include/package-defaults.mk
+--- LEDE/include/package-defaults.mk
++++ Entware-ng/include/package-defaults.mk
+@@ -68,13 +68,13 @@
+ endif
+ 
+ EXTRA_CXXFLAGS = $(EXTRA_CFLAGS)
+-ifeq ($(CONFIG_BUILD_NLS),y)
+-    DISABLE_NLS:=
+-else
++#ifeq ($(CONFIG_BUILD_NLS),y)
++#    DISABLE_NLS:=
++#else
+     DISABLE_NLS:=--disable-nls
+-endif
++#endif
+ 
+-CONFIGURE_PREFIX:=/usr
++CONFIGURE_PREFIX:=/opt
+ CONFIGURE_ARGS = \
+ 		--target=$(GNU_TARGET_NAME) \
+ 		--host=$(GNU_TARGET_NAME) \
+@@ -86,9 +86,9 @@
+ 		--bindir=$(CONFIGURE_PREFIX)/bin \
+ 		--sbindir=$(CONFIGURE_PREFIX)/sbin \
+ 		--libexecdir=$(CONFIGURE_PREFIX)/lib \
+-		--sysconfdir=/etc \
++		--sysconfdir=$(CONFIGURE_PREFIX)/etc \
+ 		--datadir=$(CONFIGURE_PREFIX)/share \
+-		--localstatedir=/var \
++		--localstatedir=$(CONFIGURE_PREFIX)/var \
+ 		--mandir=$(CONFIGURE_PREFIX)/man \
+ 		--infodir=$(CONFIGURE_PREFIX)/info \
+ 		$(DISABLE_NLS) \
+diff -ur LEDE/include/package-ipkg.mk Entware-ng/include/package-ipkg.mk
+--- LEDE/include/package-ipkg.mk
++++ Entware-ng/include/package-ipkg.mk
+@@ -13,7 +13,7 @@
+ IPKG_BUILD:= \
+   $(SCRIPT_DIR)/ipkg-build -c -o 0 -g 0
+ 
+-IPKG_STATE_DIR:=$(TARGET_DIR)/usr/lib/opkg
++IPKG_STATE_DIR:=$(TARGET_DIR)/opt/lib/opkg
+ 
+ # 1: package name
+ # 2: variable name
+@@ -134,8 +134,8 @@
+ 
+     $(eval $(call BuildIPKGVariable,$(1),conffiles))
+     $(eval $(call BuildIPKGVariable,$(1),preinst,,1))
+-    $(eval $(call BuildIPKGVariable,$(1),postinst,-pkg,1))
+-    $(eval $(call BuildIPKGVariable,$(1),prerm,-pkg,1))
++    $(eval $(call BuildIPKGVariable,$(1),postinst,,1))
++    $(eval $(call BuildIPKGVariable,$(1),prerm,,1))
+     $(eval $(call BuildIPKGVariable,$(1),postrm,,1))
+ 
+     $(PKG_BUILD_DIR)/.pkgdir/$(1).installed : export PATH=$$(TARGET_PATH_PKG)
+@@ -204,20 +204,6 @@
+ 			printf "Description: "; echo "$$$$DESCRIPTION" | sed -e 's,^[[:space:]]*, ,g'; \
+ 		) > control; \
+ 		chmod 644 control; \
+-		( \
+-			echo "#!/bin/sh"; \
+-			echo "[ \"\$$$${IPKG_NO_SCRIPT}\" = \"1\" ] && exit 0"; \
+-			echo "[ -x "\$$$${IPKG_INSTROOT}/lib/functions.sh" ] || exit 0"; \
+-			echo ". \$$$${IPKG_INSTROOT}/lib/functions.sh"; \
+-			echo "default_postinst \$$$$0 \$$$$@"; \
+-		) > postinst; \
+-		( \
+-			echo "#!/bin/sh"; \
+-			echo "[ -x "\$$$${IPKG_INSTROOT}/lib/functions.sh" ] || exit 0"; \
+-			echo ". \$$$${IPKG_INSTROOT}/lib/functions.sh"; \
+-			echo "default_prerm \$$$$0 \$$$$@"; \
+-		) > prerm; \
+-		chmod 0755 postinst prerm; \
+ 		$($(1)_COMMANDS) \
+ 	)
+ 
+@@ -228,8 +214,8 @@
+ 				[ -f "$$(IDIR_$(1))/$$$$x" ] || keepfiles="$$$${keepfiles:+$$$$keepfiles }$$$$x"; \
+ 			done; \
+ 			[ -z "$$$$keepfiles" ] || { \
+-				mkdir -p $$(IDIR_$(1))/lib/upgrade/keep.d; \
+-				for x in $$$$keepfiles; do echo $$$$x >> $$(IDIR_$(1))/lib/upgrade/keep.d/$(1); done; \
++				mkdir -p $$(IDIR_$(1))/opt/lib/upgrade/keep.d; \
++				for x in $$$$keepfiles; do echo $$$$x >> $$(IDIR_$(1))/opt/lib/upgrade/keep.d/$(1); done; \
+ 			}; \
+ 		)
+     endif
+diff -ur LEDE/include/package.mk Entware-ng/include/package.mk
+--- LEDE/include/package.mk
++++ Entware-ng/include/package.mk
+@@ -102,7 +102,7 @@
+ CONFIG_SITE:=$(INCLUDE_DIR)/site/$(ARCH)
+ CUR_MAKEFILE:=$(filter-out Makefile,$(firstword $(MAKEFILE_LIST)))
+ SUBMAKE:=$(NO_TRACE_MAKE) $(if $(CUR_MAKEFILE),-f $(CUR_MAKEFILE))
+-PKG_CONFIG_PATH=$(STAGING_DIR)/usr/lib/pkgconfig:$(STAGING_DIR)/usr/share/pkgconfig
++PKG_CONFIG_PATH=$(STAGING_DIR)/opt/lib/pkgconfig:$(STAGING_DIR)/opt/share/pkgconfig
+ unexport QUIET CONFIG_SITE
+ 
+ ifeq ($(DUMP)$(filter prereq clean refresh update,$(MAKECMDGOALS)),)
+@@ -132,8 +132,8 @@
+ endif
+ 
+ define Build/Exports/Default
+-  $(1) : export ACLOCAL_INCLUDE=$$(foreach p,$$(wildcard $$(STAGING_DIR)/usr/share/aclocal $$(STAGING_DIR)/usr/share/aclocal-* $$(STAGING_DIR_HOSTPKG)/share/aclocal $$(STAGING_DIR_HOSTPKG)/share/aclocal-* $$(STAGING_DIR)/host/share/aclocal $$(STAGING_DIR)/host/share/aclocal-*),-I $$(p))
+-  $(1) : export STAGING_PREFIX=$$(STAGING_DIR)/usr
++  $(1) : export ACLOCAL_INCLUDE=$$(foreach p,$$(wildcard $$(STAGING_DIR)/opt/share/aclocal $$(STAGING_DIR)/opt/share/aclocal-* $$(STAGING_DIR_HOSTPKG)/share/aclocal $$(STAGING_DIR_HOSTPKG)/share/aclocal-* $$(STAGING_DIR)/host/share/aclocal $$(STAGING_DIR)/host/share/aclocal-*),-I $$(p))
++  $(1) : export STAGING_PREFIX=$$(STAGING_DIR)/opt
+   $(1) : export PATH=$$(TARGET_PATH_PKG)
+   $(1) : export CONFIG_SITE:=$$(CONFIG_SITE)
+   $(1) : export PKG_CONFIG_PATH:=$$(PKG_CONFIG_PATH)
+diff -ur LEDE/include/rootfs.mk Entware-ng/include/rootfs.mk
+--- LEDE/include/rootfs.mk
++++ Entware-ng/include/rootfs.mk
+@@ -49,9 +49,9 @@
+ 
+ ifdef CONFIG_CLEAN_IPKG
+   define clean_ipkg
+-	-find $(1)/usr/lib/opkg -type f -and -not -name '*.control' | $(XARGS) rm -rf
+-	-sed -i -ne '/^Require-User: /p' $(1)/usr/lib/opkg/info/*.control
+-	-find $(1)/usr/lib/opkg -empty | $(XARGS) rm -rf
++	-find $(1)/opt/lib/opkg -type f -and -not -name '*.control' | $(XARGS) rm -rf
++	-sed -i -ne '/^Require-User: /p' $(1)/opt/lib/opkg/info/*.control
++	-find $(1)/opt/lib/opkg -empty | $(XARGS) rm -rf
+   endef
+ endif
+ 
+diff -ur LEDE/include/scons.mk Entware-ng/include/scons.mk
+--- LEDE/include/scons.mk
++++ Entware-ng/include/scons.mk
+@@ -13,7 +13,7 @@
+ 	(cd $(PKG_BUILD_DIR); \
+ 		$(SCONS_VARS) \
+ 		scons \
+-			prefix=/usr \
++			prefix=/opt \
+ 			$(SCONS_OPTIONS) \
+ 		install \
+ 	)
+diff -ur LEDE/include/target.mk Entware-ng/include/target.mk
+--- LEDE/include/target.mk
++++ Entware-ng/include/target.mk
+@@ -13,11 +13,11 @@
+ DEVICE_TYPE?=router
+ 
+ # Default packages - the really basic set
+-DEFAULT_PACKAGES:=base-files libc libgcc busybox dropbear mtd uci opkg netifd fstools uclient-fetch logd
++DEFAULT_PACKAGES:=libc libgcc busybox dropbear
+ # For nas targets
+-DEFAULT_PACKAGES.nas:=block-mount fdisk lsblk mdadm
++DEFAULT_PACKAGES.nas:=libc libgcc busybox dropbear
+ # For router targets
+-DEFAULT_PACKAGES.router:=dnsmasq iptables ip6tables ppp ppp-mod-pppoe firewall odhcpd odhcp6c
++DEFAULT_PACKAGES.router:=libc libgcc busybox dropbear
+ DEFAULT_PACKAGES.bootloader:=
+ 
+ ifneq ($(DUMP),)
+@@ -280,7 +280,7 @@
+ 	 echo 'Target-Board: $(BOARD)'; \
+ 	 echo 'Target-Name: $(BOARDNAME)$(if $(SUBTARGETS),$(if $(SUBTARGET),))'; \
+ 	 echo 'Target-Arch: $(ARCH)'; \
+-	 echo 'Target-Arch-Packages: $(if $(ARCH_PACKAGES),$(ARCH_PACKAGES),$(ARCH)$(if $(CPU_TYPE),_$(CPU_TYPE))$(if $(CPU_SUBTYPE),_$(CPU_SUBTYPE)))'; \
++	 echo 'Target-Arch-Packages: $(if $(ARCH_PACKAGES),$(ARCH_PACKAGES),$(BOARD))'; \
+ 	 echo 'Target-Features: $(FEATURES)'; \
+ 	 echo 'Target-Depends: $(DEPENDS)'; \
+ 	 echo 'Target-Optimization: $(if $(CFLAGS),$(CFLAGS),$(DEFAULT_CFLAGS))'; \
+Only in Entware-ng: LastSync.txt
+diff -ur LEDE/Makefile Entware-ng/Makefile
+--- LEDE/Makefile
++++ Entware-ng/Makefile
+@@ -92,7 +92,7 @@
+ 	$(SCRIPT_DIR)/diffconfig.sh > $(BIN_DIR)/config.seed
+ 
+ prepare: .config $(tools/stamp-compile) $(toolchain/stamp-compile)
+-world: prepare $(target/stamp-compile) $(package/stamp-compile) $(package/stamp-install) $(target/stamp-install) FORCE
++world: prepare $(target/stamp-compile) $(package/stamp-compile) FORCE
+ 	$(_SINGLE)$(SUBMAKE) -r package/index
+ 	$(_SINGLE)$(SUBMAKE) -r diffconfig
+ 	$(_SINGLE)$(SUBMAKE) -r checksum
+Only in Entware-ng: make_include_archs.sh
+diff -ur LEDE/rules.mk Entware-ng/rules.mk
+--- LEDE/rules.mk
++++ Entware-ng/rules.mk
+@@ -139,9 +139,9 @@
+   TOOLCHAIN_DIR_NAME:=toolchain-$(GNU_TARGET_NAME)
+ endif
+ 
+-ifeq ($(or $(CONFIG_EXTERNAL_TOOLCHAIN),$(CONFIG_GCC_VERSION_4_8),$(CONFIG_TARGET_uml)),)
+-  iremap = -iremap $(1):$(2)
+-endif
++#ifeq ($(or $(CONFIG_EXTERNAL_TOOLCHAIN),$(CONFIG_GCC_VERSION_4_8),$(CONFIG_TARGET_uml)),)
++#  iremap = -iremap $(1):$(2)
++#endif
+ 
+ PACKAGE_DIR:=$(BIN_DIR)/packages
+ BUILD_DIR:=$(BUILD_DIR_BASE)/$(TARGET_DIR_NAME)
+@@ -168,8 +168,9 @@
+ TARGET_CXXFLAGS = $(TARGET_CFLAGS)
+ TARGET_ASFLAGS_DEFAULT = $(TARGET_CFLAGS)
+ TARGET_ASFLAGS = $(TARGET_ASFLAGS_DEFAULT)
+-TARGET_CPPFLAGS:=-I$(STAGING_DIR)/usr/include -I$(STAGING_DIR)/include
+-TARGET_LDFLAGS:=-L$(STAGING_DIR)/usr/lib -L$(STAGING_DIR)/lib
++TARGET_GCCGOFLAGS = -g1 -O2
++TARGET_CPPFLAGS:=-I$(STAGING_DIR)/opt/include -I$(STAGING_DIR)/include
++TARGET_LDFLAGS:=-L$(STAGING_DIR)/opt/lib -L$(STAGING_DIR)/lib -Wl,-rpath,/opt/lib -Wl,-rpath-link=$(STAGING_DIR)/opt/lib
+ ifneq ($(CONFIG_EXTERNAL_TOOLCHAIN),)
+ LIBGCC_S_PATH=$(realpath $(wildcard $(call qstrip,$(CONFIG_LIBGCC_ROOT_DIR))/$(call qstrip,$(CONFIG_LIBGCC_FILE_SPEC))))
+ LIBGCC_S=$(if $(LIBGCC_S_PATH),-L$(dir $(LIBGCC_S_PATH)) -lgcc_s)
+@@ -178,8 +179,37 @@
+ LIBGCC_A=$(lastword $(wildcard $(TOOLCHAIN_DIR)/lib/gcc/*/*/libgcc.a))
+ LIBGCC_S=$(if $(wildcard $(TOOLCHAIN_DIR)/lib/libgcc_s.so),-L$(TOOLCHAIN_DIR)/lib -lgcc_s,$(LIBGCC_A))
+ endif
+-LIBRPC=-lrpc
+-LIBRPC_DEPENDS=+librpc
++#
++# glibc does not have librpc, so we set it only for uclibc
++# dynamic linker depends on libc and arch. it is set for the targets we compile
++# may be it is better to patch gcc & glibc to set the path of dynamic linker ????
++#
++#LIBRPC=-lrpc
++#LIBRPC_DEPENDS=+librpc
++
++ifeq ($(LIBC),uClibc)
++DYNLINKER=ld-uClibc.so.0
++endif
++
++ifeq  ($(LIBC),glibc)
++  ifeq ($(ARCH),arm)
++    DYNLINKER=ld-linux.so.3
++  endif
++  ifeq ($(ARCH),i386)
++    DYNLINKER=ld-linux.so.2
++  endif
++  ifeq ($(ARCH),x86_64)
++    DYNLINKER=ld-linux-x86-64.so.2
++  endif
++  ifeq ($(ARCH),mipsel)
++    DYNLINKER=ld.so.1
++  endif
++  ifeq ($(ARCH),mips)
++    DYNLINKER=ld.so.1
++  endif
++endif
++TARGET_LDFLAGS+= -Wl,--dynamic-linker=/opt/lib/$(DYNLINKER)
++TARGET_GCCGOFLAGS+= -Wl,--dynamic-linker=/opt/lib/$(DYNLINKER) -Wl,-rpath=/opt/lib
+ 
+ ifeq ($(CONFIG_ARCH_64BIT),y)
+   LIB_SUFFIX:=64
+@@ -224,8 +254,10 @@
+   SOFT_FLOAT_CONFIG_OPTION:=--with-float=soft
+   ifeq ($(CONFIG_arm),y)
+     TARGET_CFLAGS+= -mfloat-abi=soft
++    TARGET_GCCGOFLAGS+= -mfloat-abi=soft
+   else
+     TARGET_CFLAGS+= -msoft-float
++    TARGET_GCCGOFLAGS+= -msoft-float
+   endif
+ else
+   SOFT_FLOAT_CONFIG_OPTION:=
+@@ -242,6 +274,8 @@
+ 
+ export PKG_CONFIG
+ 
++export GOROOT:=$(STAGING_DIR_HOST)/go
++
+ HOSTCC:=gcc
+ HOSTCXX:=g++
+ HOST_CPPFLAGS:=-I$(STAGING_DIR_HOST)/include -I$(STAGING_DIR_HOST)/usr/include $(if $(IS_PACKAGE_BUILD),-I$(STAGING_DIR_HOSTPKG)/include -I$(STAGING_DIR)/host/include)
+diff -ur LEDE/scripts/download.pl Entware-ng/scripts/download.pl
+--- LEDE/scripts/download.pl
++++ Entware-ng/scripts/download.pl
+@@ -259,6 +259,7 @@
+ push @mirrors, 'http://sources.lede-project.org';
+ push @mirrors, 'http://mirror2.openwrt.org/sources';
+ push @mirrors, 'http://downloads.openwrt.org/sources';
++push @mirrors, 'http://pkg.entware.net/sources';
+ 
+ while (!-f "$target/$filename") {
+ 	my $mirror = shift @mirrors;
+diff -ur LEDE/scripts/getver.sh Entware-ng/scripts/getver.sh
+--- LEDE/scripts/getver.sh
++++ Entware-ng/scripts/getver.sh
+@@ -12,7 +12,7 @@
+ }
+ 
+ try_git() {
+-	REBOOT=ee53a240ac902dc83209008a2671e7fdcf55957a
++	REBOOT=b22c8681ee0093a2a284d2deb01c00ec5ae8b483
+ 	git rev-parse --git-dir >/dev/null 2>&1 || return 1
+ 
+ 	[ -n "$GET_REV" ] || GET_REV="HEAD"
+diff -ur LEDE/scripts/ipkg-make-index.sh Entware-ng/scripts/ipkg-make-index.sh
+--- LEDE/scripts/ipkg-make-index.sh
++++ Entware-ng/scripts/ipkg-make-index.sh
+@@ -15,7 +15,6 @@
+ 	name="${pkg##*/}"
+ 	name="${name%%_*}"
+ 	[[ "$name" = "kernel" ]] && continue
+-	[[ "$name" = "libc" ]] && continue
+ 	echo "Generating index for package $pkg" >&2
+ 	file_size=$(ls -l $pkg | awk '{print $5}')
+ 	sha256sum=$(mkhash sha256 $pkg)
+diff -ur LEDE/scripts/rstrip.sh Entware-ng/scripts/rstrip.sh
+--- LEDE/scripts/rstrip.sh
++++ Entware-ng/scripts/rstrip.sh
+@@ -30,16 +30,6 @@
+ 		eval "$STRIP_KMOD $F"
+ 	} || {
+ 		b=$(stat -c '%a' $F)
+-		[ -z "$PATCHELF" ] || [ -z "$TOPDIR" ] || {
+-			old_rpath="$($PATCHELF --print-rpath $F)"; new_rpath=""
+-			for path in $old_rpath; do
+-				case "$path" in
+-					/lib/[^/]*|/usr/lib/[^/]*|\$ORIGIN/*) new_rpath="${new_rpath:+$new_rpath:}$path" ;;
+-					*) echo "$SELF: $F: removing rpath $path" ;;
+-				esac
+-			done
+-			[ "$new_rpath" = "$old_rpath" ] || $PATCHELF --set-rpath "$new_rpath" $F
+-		}
+ 		eval "$STRIP $F"
+ 		a=$(stat -c '%a' $F)
+ 		[ "$a" = "$b" ] || chmod $b $F
+Only in Entware-ng/tools: go-bin
+Only in Entware-ng/tools: godep
+Only in Entware-ng/tools: go-src
+diff -ur LEDE/tools/Makefile Entware-ng/tools/Makefile
+--- LEDE/tools/Makefile
++++ Entware-ng/tools/Makefile
+@@ -32,11 +32,15 @@
+ tools-$(CONFIG_TARGET_x86) += qemu
+ tools-$(CONFIG_TARGET_mxs) += elftosb sdimage
+ tools-$(CONFIG_TARGET_ar71xx) += lzma-old squashfs
++tools-$(CONFIG_TARGET_mipselsf) += wl500g-kernel
+ tools-$(CONFIG_USES_MINOR) += kernel2minor
+ tools-y += lzma squashfs4
+ tools-$(BUILD_B43_TOOLS) += b43-tools
+ tools-$(BUILD_ISL) += isl
+ tools-$(CONFIG_USE_SPARSE) += sparse
++tools-$(CONFIG_INSTALL_GCCGO) += go-bin
++tools-$(CONFIG_INSTALL_GCCGO) += go-src
++tools-$(CONFIG_INSTALL_GCCGO) += godep
+ tools-$(CONFIG_TARGET_apm821xx) += genext2fs
+ 
+ # builddir dependencies
+@@ -72,6 +76,8 @@
+ $(curdir)/mkimage/compile += $(curdir)/libressl/compile
+ $(curdir)/firmware-utils/compile += $(curdir)/libressl/compile
+ $(curdir)/cmake/compile += $(curdir)/libressl/compile
++$(curdir)/go-src/compile := $(curdir)/go-bin/compile
++$(curdir)/godep/compile := $(curdir)/go-bin/compile
+ 
+ ifneq ($(HOST_OS),Linux)
+   tools-y += coreutils
+Only in Entware-ng/tools: wl500g-kernel

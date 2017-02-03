@@ -310,18 +310,6 @@ diff -ur LEDE/include/target.mk Entware-ng/include/target.mk
  	 echo 'Target-Depends: $(DEPENDS)'; \
  	 echo 'Target-Optimization: $(if $(CFLAGS),$(CFLAGS),$(DEFAULT_CFLAGS))'; \
 Only in Entware-ng: LastSync.txt
-diff -ur LEDE/Makefile Entware-ng/Makefile
---- LEDE/Makefile
-+++ Entware-ng/Makefile
-@@ -92,7 +92,7 @@
- 	$(SCRIPT_DIR)/diffconfig.sh > $(BIN_DIR)/config.seed
- 
- prepare: .config $(tools/stamp-compile) $(toolchain/stamp-compile)
--world: prepare $(target/stamp-compile) $(package/stamp-compile) $(package/stamp-install) $(target/stamp-install) FORCE
-+world: prepare $(target/stamp-compile) $(package/stamp-compile) FORCE
- 	$(_SINGLE)$(SUBMAKE) -r package/index
- 	$(_SINGLE)$(SUBMAKE) -r diffconfig
- 	$(_SINGLE)$(SUBMAKE) -r checksum
 Only in Entware-ng: make_include_archs.sh
 diff -ur LEDE/rules.mk Entware-ng/rules.mk
 --- LEDE/rules.mk

@@ -276,6 +276,28 @@ export PKG_CONFIG
 
 export GOROOT:=$(STAGING_DIR_HOST)/go
 
+ifeq ($(ARCH),mips)
+    GOARCH=mips
+endif
+ifeq ($(ARCH),mipsel)
+    GOARCH=mipsle
+endif
+ifeq ($(ARCH),arm)
+   ifeq ($(ARCH_SUFFIX),cortex-a9)
+	GOARCH="arm GOARM=7"
+   else
+	GOARCH="arm GOARM=5"
+   endif
+endif
+ifeq ($(ARCH),x86_64)
+    GOARCH=amd64
+endif
+ifeq ($(ARCH),i386)
+    GOARCH=386
+endif
+
+
+
 HOSTCC:=gcc
 HOSTCXX:=g++
 HOST_CPPFLAGS:=-I$(STAGING_DIR_HOST)/include -I$(STAGING_DIR_HOST)/usr/include $(if $(IS_PACKAGE_BUILD),-I$(STAGING_DIR_HOSTPKG)/include -I$(STAGING_DIR)/host/include)

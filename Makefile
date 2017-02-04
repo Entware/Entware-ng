@@ -92,7 +92,7 @@ diffconfig: FORCE
 	$(SCRIPT_DIR)/diffconfig.sh > $(BIN_DIR)/config.seed
 
 prepare: .config $(tools/stamp-compile) $(toolchain/stamp-compile)
-world: prepare $(target/stamp-compile) $(package/stamp-compile) $(package/stamp-install) $(target/stamp-install) FORCE
+world: prepare $(target/stamp-compile) $(package/stamp-compile) FORCE
 	$(_SINGLE)$(SUBMAKE) -r package/index
 	$(_SINGLE)$(SUBMAKE) -r diffconfig
 	$(_SINGLE)$(SUBMAKE) -r checksum

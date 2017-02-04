@@ -6,18 +6,31 @@ define Package/gopackage/Default
 	SUBMENU:=Go
 	SECTION:=lang
 	CATEGORY:=Languages
-	DEPENDS:=@INSTALL_GCCGO +libgo +libpthread
 	MAINTAINER:=Entware team, http://entware.net
 endef
 
 # use `go get -d` to retrieve  GO package sources when PKG_SOURCE is undefined, patch if patches dir present
 
 ifeq ($(PKG_SOURCE),)
- define Build/Prepare
+ ifeq ($(PKG_COMMIT),)
+  define Build/Prepare
 		$(INSTALL_DIR) $(PKG_BUILD_DIR)
-		GOPATH=$(PKG_BUILD_DIR) ego get -d -x $(PKG_GOGET)
+		GOPATH=$(PKG_BUILD_DIR) $(GOROOT)/bin/go get -d -x $(PKG_GOGET)
 		$(Build/Patch)
- endef
+  endef
+  else
+   define Build/Prepare
+		$(INSTALL_DIR) $(PKG_BUILD_DIR)
+		mkdir -p $(PKG_BUILD_DIR)/src/$(PKG_GOGET)
+		( \
+			cd $(PKG_BUILD_DIR)/src/$(PKG_GOGET)/..; \
+			git clone https://$(PKG_GOGET); \
+			cd $(PKG_BUILD_DIR)/src/$(PKG_GOGET); \
+			git checkout $(PKG_COMMIT); \
+		)
+		$(Build/Patch)
+  endef
+ endif
 endif
 
 # use standard procedure to download and unpack GO package sources (stored in http://pkg.entware.net/sources/go).
@@ -54,5 +67,10 @@ endif
 # Compile with gccgo using special patched ego version of go
 
 define Build/Compile
-	GOPATH=$(PKG_BUILD_DIR) gcc=$(TARGET_CC) ego get -x -v -compiler gccgo -gccgoflags '$(TARGET_GCCGOFLAGS)' $(PKG_GOGET)
+	( \
+		cd $(PKG_BUILD_DIR); \
+		mkdir -p bin; \
+		cd bin; \
+		GOOS=linux GOARCH=$(GOARCH) GOPATH=$(PKG_BUILD_DIR) $(GOROOT)/bin/go build -x -v $(PKG_GOGET) ; \
+	)
 endef

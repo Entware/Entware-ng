@@ -34,14 +34,14 @@ endef
 
 define Build/InstallDev
 	$(MAKE) -C $(PKG_BUILD_DIR) \
-		bindir="$(2)/libltdl/bin" \
-		datadir="$(2)/libltdl/share" \
-		prefix="$(2)/libltdl" \
-		exec_prefix="$(2)/libltdl" \
+		bindir="$(2)/bin" \
+		datadir="$(2)/share" \
+		prefix="$(2)" \
+		exec_prefix="$(2)" \
 		install
 	$(INSTALL_DIR) $(1)/opt/lib $(1)/opt/include
-	mv $(2)/libltdl/lib/* $(1)/opt/lib/
-	mv $(2)/libltdl/include/* $(1)/opt/include/
+	mv $(2)/lib/* $(1)/opt/lib/
+	mv $(2)/include/* $(1)/opt/include/
 endef
 
 define Package/libltdl/install

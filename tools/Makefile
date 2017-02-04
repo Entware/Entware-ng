@@ -6,6 +6,8 @@
 #
 # Main makefile for the host tools
 #
+# Entware note: some tools (image and kernel related) that we do not need are removed
+#               other tools go and wl500 kernel sources are added
 curdir:=tools
 
 # subdirectories to descend into
@@ -17,71 +19,42 @@ ifeq ($(CONFIG_EXTERNAL_TOOLCHAIN),)
     BUILD_ISL = y
   endif
 endif
-ifneq ($(CONFIG_SDK)$(CONFIG_PACKAGE_kmod-b43)$(CONFIG_PACKAGE_b43legacy-firmware)$(CONFIG_BRCMSMAC_USE_FW_FROM_WL),)
-  BUILD_B43_TOOLS = y
-endif
 
 tools-$(BUILD_TOOLCHAIN) += gmp mpfr mpc libelf expat
 tools-y += m4 libtool autoconf automake flex bison pkg-config mklibs
-tools-y += sstrip make-ext4fs e2fsprogs mtd-utils mkimage
-tools-y += firmware-utils patch-image quilt padjffs2
+tools-y += sstrip
+tools-y += quilt
 tools-y += mm-macros missing-macros cmake scons bc findutils gengetopt patchelf
-tools-y += mtools dosfstools libressl
-tools-$(CONFIG_TARGET_orion_generic) += wrt350nv2-builder upslug2
-tools-$(CONFIG_powerpc) += upx
-tools-$(CONFIG_TARGET_x86) += qemu
-tools-$(CONFIG_TARGET_mxs) += elftosb sdimage
-tools-$(CONFIG_TARGET_ar71xx) += lzma-old squashfs
+tools-y += mtools libressl
 tools-$(CONFIG_TARGET_mipselsf) += wl500g-kernel
-tools-$(CONFIG_USES_MINOR) += kernel2minor
-tools-y += lzma squashfs4
-tools-$(BUILD_B43_TOOLS) += b43-tools
+tools-y += lzma
 tools-$(BUILD_ISL) += isl
-tools-$(CONFIG_USE_SPARSE) += sparse
-tools-$(CONFIG_INSTALL_GCCGO) += go-bin
 tools-$(CONFIG_INSTALL_GCCGO) += go-src
-tools-$(CONFIG_INSTALL_GCCGO) += godep
-tools-$(CONFIG_TARGET_apm821xx) += genext2fs
+tools-$(CONFIG_INSTALL_GCCGO) += go-bootstrap
 
 # builddir dependencies
 $(curdir)/bison/compile := $(curdir)/flex/compile
 $(curdir)/flex/compile := $(curdir)/libtool/compile
 $(curdir)/libtool/compile := $(curdir)/m4/compile $(curdir)/autoconf/compile $(curdir)/automake/compile $(curdir)/missing-macros/compile
-$(curdir)/squashfs/compile := $(curdir)/lzma-old/compile
-$(curdir)/squashfs4/compile := $(curdir)/xz/compile
 $(curdir)/quilt/compile := $(curdir)/autoconf/compile $(curdir)/findutils/compile
 $(curdir)/autoconf/compile := $(curdir)/m4/compile
 $(curdir)/automake/compile := $(curdir)/m4/compile $(curdir)/autoconf/compile $(curdir)/pkg-config/compile $(curdir)/xz/compile
 $(curdir)/gmp/compile := $(curdir)/libtool/compile
 $(curdir)/mpc/compile := $(curdir)/mpfr/compile $(curdir)/gmp/compile
 $(curdir)/mpfr/compile := $(curdir)/gmp/compile
-$(curdir)/mtd-utils/compile := $(curdir)/e2fsprogs/compile
 $(curdir)/mklibs/compile := $(curdir)/libtool/compile
-$(curdir)/qemu/compile := $(curdir)/e2fsprogs/compile
-$(curdir)/upslug2/compile := $(curdir)/libtool/compile
 $(curdir)/mm-macros/compile := $(curdir)/libtool/compile
 $(curdir)/missing-macros/compile := $(curdir)/autoconf/compile
-$(curdir)/e2fsprogs/compile := $(curdir)/libtool/compile
 $(curdir)/libelf/compile := $(curdir)/libtool/compile
-$(curdir)/sdcc/compile := $(curdir)/bison/compile
-$(curdir)/b43-tools/compile := $(curdir)/bison/compile
-$(curdir)/padjffs2/compile := $(curdir)/findutils/compile
 $(curdir)/isl/compile := $(curdir)/gmp/compile
 $(curdir)/bc/compile := $(curdir)/bison/compile
 $(curdir)/findutils/compile := $(curdir)/bison/compile
 $(curdir)/gengetopt/compile := $(curdir)/libtool/compile
 $(curdir)/patchelf/compile := $(curdir)/libtool/compile
-$(curdir)/dosfstools/compile := $(curdir)/autoconf/compile $(curdir)/automake/compile
-$(curdir)/libressl/compile := $(curdir)/pkg-config/compile
-$(curdir)/mkimage/compile += $(curdir)/libressl/compile
-$(curdir)/firmware-utils/compile += $(curdir)/libressl/compile
 $(curdir)/cmake/compile += $(curdir)/libressl/compile
-$(curdir)/go-src/compile := $(curdir)/go-bin/compile
-$(curdir)/godep/compile := $(curdir)/go-bin/compile
+$(curdir)/go-src/compile := $(curdir)/go-bootstrap/compile
 
-ifneq ($(HOST_OS),Linux)
-  tools-y += coreutils
-endif
+tools-y += coreutils
 
 ifneq ($(CONFIG_CCACHE)$(CONFIG_SDK),)
 $(foreach tool, $(filter-out xz patch,$(tools-y)), $(eval $(curdir)/$(tool)/compile += $(curdir)/ccache/compile))

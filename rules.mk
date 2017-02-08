@@ -283,10 +283,11 @@ ifeq ($(ARCH),mipsel)
     GOARCH=mipsle
 endif
 ifeq ($(ARCH),arm)
-   ifeq ($(ARCH_SUFFIX),cortex-a9)
-	GOARCH="arm GOARM=7"
+    GOARCH=arm
+   ifeq ($(ARCH_SUFFIX),_cortex-a9)
+	GOARM=GOARM=7
    else
-	GOARCH="arm GOARM=5"
+	GOARM=GOARM=5
    endif
 endif
 ifeq ($(ARCH),x86_64)

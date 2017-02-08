@@ -53,7 +53,8 @@ ifeq ($(PKG_SOURCE),)
  define Build/Configure
 	(cd $(PKG_BUILD_DIR); \
 		rm -f $(DL_DIR)/$(GOPKG_SOURCE) ; \
-		tar cjf $(DL_DIR)/$(GOPKG_SOURCE) ./src --exclude-vcs ; \
+		rm -rf `find . -type d -name .git` ; \
+		tar cjf $(DL_DIR)/$(GOPKG_SOURCE) ./src ; \
 	)
  endef
 endif
@@ -71,6 +72,6 @@ define Build/Compile
 		cd $(PKG_BUILD_DIR); \
 		mkdir -p bin; \
 		cd bin; \
-		GOOS=linux GOARCH=$(GOARCH) GOPATH=$(PKG_BUILD_DIR) $(GOROOT)/bin/go build -x -v $(PKG_GOGET) ; \
+		GOOS=linux GOARCH=$(GOARCH) $(GOARM) GOPATH=$(PKG_BUILD_DIR) $(GOROOT)/bin/go build -x -v $(PKG_GOGET) ; \
 	)
 endef

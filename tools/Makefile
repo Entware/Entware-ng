@@ -25,7 +25,7 @@ tools-y += m4 libtool autoconf automake flex bison pkg-config mklibs
 tools-y += sstrip
 tools-y += quilt
 tools-y += mm-macros missing-macros cmake scons bc findutils gengetopt patchelf
-tools-y += mtools libressl
+tools-y += mtools
 tools-$(CONFIG_TARGET_mipselsf) += wl500g-kernel
 tools-y += lzma
 tools-$(BUILD_ISL) += isl
@@ -51,7 +51,6 @@ $(curdir)/bc/compile := $(curdir)/bison/compile
 $(curdir)/findutils/compile := $(curdir)/bison/compile
 $(curdir)/gengetopt/compile := $(curdir)/libtool/compile
 $(curdir)/patchelf/compile := $(curdir)/libtool/compile
-$(curdir)/cmake/compile += $(curdir)/libressl/compile
 $(curdir)/go-src/compile := $(curdir)/go-bootstrap/compile
 
 tools-y += coreutils

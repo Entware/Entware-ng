@@ -8,7 +8,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=go-bootstrap
 PKG_VERSION:=1.4.3
-OS=uname
+OS=$(shell uname | tr 'A-Z' 'a-z')
 bintype:=$(shell uname -m | sed \
         -e 's/i[3-9]86/386/' \
         -e 's/x86_64/amd64/' \

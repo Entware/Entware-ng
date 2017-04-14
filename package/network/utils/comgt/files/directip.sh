@@ -27,7 +27,6 @@ proto_directip_setup() {
 
 	[ -n "$ctl_device" ] && device=$ctl_device
 
-	device="$(readlink -f $device)"
 	[ -e "$device" ] || {
 		proto_notify_error "$interface" NO_DEVICE
 		proto_set_available "$interface" 0

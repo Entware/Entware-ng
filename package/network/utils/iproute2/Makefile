@@ -9,7 +9,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=iproute2
 PKG_VERSION:=4.4.0
-PKG_RELEASE:=7
+PKG_RELEASE:=9
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
 PKG_SOURCE_URL:=@KERNEL/linux/utils/net/iproute2
@@ -30,14 +30,15 @@ define Package/iproute2/Default
   MAINTAINER:=Russell Senior <russell@personaltelco.net>
   DEPENDS:= +libnl-tiny
   VARIANT:=$(1)
+  PROVIDES:=$(3)
 endef
 
 define Package/ip-tiny
-$(call Package/iproute2/Default,tiny,Minimal)
+$(call Package/iproute2/Default,tiny,Minimal,ip)
   CONFLICTS:=ip-full
 endef
 
-Package/ip-full:=$(call Package/iproute2/Default,full,Full)
+Package/ip-full:=$(call Package/iproute2/Default,full,Full,ip)
 
 define Package/tc
 $(call Package/iproute2/Default)

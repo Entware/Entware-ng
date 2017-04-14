@@ -11,7 +11,7 @@ include $(INCLUDE_DIR)/kernel.mk
 
 PKG_NAME:=iptables
 PKG_VERSION:=1.4.21
-PKG_RELEASE:=2
+PKG_RELEASE:=2a
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.bz2
 PKG_SOURCE_URL:=http://www.netfilter.org/projects/iptables/files \
@@ -102,29 +102,29 @@ MAKE_FLAGS := \
 	KERNEL_DIR="$(LINUX_DIR)/user_headers/" PREFIX=/usr \
 	KBUILD_OUTPUT="$(LINUX_DIR)"
 
-#define Build/InstallDev
-#	$(INSTALL_DIR) $(1)/opt/include
-#	$(INSTALL_DIR) $(1)/opt/include/iptables
-#	$(INSTALL_DIR) $(1)/opt/include/net/netfilter
+define Build/InstallDev
+	$(INSTALL_DIR) $(1)/opt/include
+	$(INSTALL_DIR) $(1)/opt/include/iptables
+	$(INSTALL_DIR) $(1)/opt/include/net/netfilter
 
 	# XXX: iptables header fixup, some headers are not installed by iptables anymore
-#	$(CP) $(PKG_BUILD_DIR)/include/iptables/*.h $(1)/opt/include/iptables/
-#	$(CP) $(PKG_BUILD_DIR)/include/iptables.h $(1)/opt/include/
-#	$(CP) $(PKG_BUILD_DIR)/include/ip6tables.h $(1)/opt/include/
-#	$(CP) $(PKG_BUILD_DIR)/include/libipulog $(1)/opt/include/
-#	$(CP) $(PKG_BUILD_DIR)/include/libiptc $(1)/opt/include/
+	$(CP) $(PKG_BUILD_DIR)/include/iptables/*.h $(1)/opt/include/iptables/
+	$(CP) $(PKG_BUILD_DIR)/include/iptables.h $(1)/opt/include/
+	$(CP) $(PKG_BUILD_DIR)/include/ip6tables.h $(1)/opt/include/
+	$(CP) $(PKG_BUILD_DIR)/include/libipulog $(1)/opt/include/
+	$(CP) $(PKG_BUILD_DIR)/include/libiptc $(1)/opt/include/
 
-#	$(CP) $(PKG_INSTALL_DIR)/opt/include/* $(1)/opt/include/
-#	$(INSTALL_DIR) $(1)/opt/lib
-#	$(CP) $(PKG_INSTALL_DIR)/opt/lib/libxtables.so* $(1)/opt/lib/
-#	$(CP) $(PKG_INSTALL_DIR)/opt/lib/libip*tc.so* $(1)/opt/lib/
-#	$(INSTALL_DIR) $(1)/opt/lib/pkgconfig
-#	$(CP) $(PKG_INSTALL_DIR)/opt/lib/pkgconfig/xtables.pc $(1)/opt/lib/pkgconfig/
-#	$(CP) $(PKG_INSTALL_DIR)/opt/lib/pkgconfig/libip*tc.pc $(1)/opt/lib/pkgconfig/
+	$(CP) $(PKG_INSTALL_DIR)/opt/include/* $(1)/opt/include/
+	$(INSTALL_DIR) $(1)/opt/lib
+	$(CP) $(PKG_INSTALL_DIR)/opt/lib/libxtables.so* $(1)/opt/lib/
+	$(CP) $(PKG_INSTALL_DIR)/opt/lib/libip*tc.so* $(1)/opt/lib/
+	$(INSTALL_DIR) $(1)/opt/lib/pkgconfig
+	$(CP) $(PKG_INSTALL_DIR)/opt/lib/pkgconfig/xtables.pc $(1)/opt/lib/pkgconfig/
+	$(CP) $(PKG_INSTALL_DIR)/opt/lib/pkgconfig/libip*tc.pc $(1)/opt/lib/pkgconfig/
 
 	# XXX: needed by firewall3
-#	$(CP) $(PKG_BUILD_DIR)/extensions/libiptext*.so $(1)/opt/lib/
-#endef
+	$(CP) $(PKG_BUILD_DIR)/extensions/libiptext*.so $(1)/opt/lib/
+endef
 
 define Package/iptables/install
 	$(INSTALL_DIR) $(1)/opt/bin

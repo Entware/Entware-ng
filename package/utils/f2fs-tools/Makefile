@@ -8,14 +8,14 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=f2fs-tools
-PKG_VERSION:=1.7.0
+PKG_VERSION:=1.8.0
 PKG_RELEASE:=1
 
 PKG_LICENSE:=GPLv2
 
-PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
-PKG_SOURCE_URL:=http://git.kernel.org/cgit/linux/kernel/git/jaegeuk/f2fs-tools.git/snapshot/
-PKG_HASH:=33d454c2e95aabef5659949c4fff15f6c9877b48349e64411de502bc62b0cbd4
+PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
+PKG_SOURCE_URL:=https://git.kernel.org/pub/scm/linux/kernel/git/jaegeuk/f2fs-tools.git/snapshot/
+PKG_HASH:=34790bccd74086e6b4f04fcac3a167ce1ca3319ce660454bceefc45c52906f94
 
 PKG_FIXUP:=autoreconf
 PKG_BUILD_PARALLEL:=1
@@ -71,10 +71,10 @@ define Package/f2fsck/install
 	$(INSTALL_DIR) $(1)/opt/sbin
 
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/opt/sbin/fsck.f2fs $(1)/opt/sbin
-	ln -s /opt/sbin/fsck.f2fs $(1)/opt/sbin/defrag.f2fs
-	ln -s /opt/sbin/fsck.f2fs $(1)/opt/sbin/dump.f2fs
-	ln -s /opt/sbin/fsck.f2fs $(1)/opt/sbin/sload.f2fs
-	ln -s /opt/sbin/fsck.f2fs $(1)/opt/sbin/resize.f2fs
+	ln -s fsck.f2fs $(1)/opt/sbin/defrag.f2fs
+	ln -s fsck.f2fs $(1)/opt/sbin/dump.f2fs
+	ln -s fsck.f2fs $(1)/opt/sbin/sload.f2fs
+	ln -s fsck.f2fs $(1)/opt/sbin/resize.f2fs
 endef
 
 define Package/f2fs-tools/install

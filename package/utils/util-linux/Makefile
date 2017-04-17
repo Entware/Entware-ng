@@ -468,9 +468,12 @@ CONFIGURE_ARGS += \
 	--without-udev		\
 	--without-readline	\
 	--disable-more		\
+	--disable-eject		\
 	--with-ncursesw
 
 TARGET_CFLAGS += $(FPIC) -std=gnu99
+
+TARGET_LDFLAGS += $(if $(CONFIG_TARGET_mipselsf),-lm)
 
 define Build/InstallDev
 	$(INSTALL_DIR) $(1)/opt/lib/pkgconfig

@@ -1,1 +1,4 @@
 Добавить в установщик пакета gcc echo сообщение о wiki и headers
+
+urbackup (1) пишет логи в /var/logs - исправить; (2) Добавить в скрипт запуска юзера: ARGS="run -u root --daemon"
+

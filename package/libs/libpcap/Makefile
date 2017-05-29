@@ -75,7 +75,7 @@ CONFIGURE_ARGS += \
 endif
 
 MAKE_FLAGS += \
-	CCOPT="$(TARGET_CFLAGS) -I$(BUILD_DIR)/linux/include"
+	CCOPT="$(TARGET_CFLAGS)  -D_DEFAULT_SOURCE -I$(STAGING_DIR)/opt/include"
 
 define Build/Configure
 	$(call Build/Configure/Default)

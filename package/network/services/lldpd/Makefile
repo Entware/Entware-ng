@@ -9,7 +9,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=lldpd
 PKG_VERSION:=0.9.7
-PKG_RELEASE:=1
+PKG_RELEASE:=1a
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=http://media.luffy.cx/files/lldpd
@@ -75,6 +75,7 @@ CONFIGURE_ARGS += \
 	--disable-hardening \
 	--without-xml \
 	--sysconfdir=/tmp \
+	--enable-oldies \
 	$(if $(CONFIG_LLDPD_WITH_CDP),,--disable-cdp) \
 	$(if $(CONFIG_LLDPD_WITH_FDP),,--disable-fdp) \
 	$(if $(CONFIG_LLDPD_WITH_EDP),,--disable-edp) \

@@ -1,5 +1,6 @@
-commit cffeb31107e27a48ddaf4953590acdefc66f2de9
-Author: Felix Fietkau <nbd@nbd.name>
-Date:   Mon Apr 3 15:08:28 2017 +0200
+commit 9c500db89680af5d89fb679e08452c8f090d804d
+Author: Jiawei Wang <me@jwang.link>
+Date:   Wed Sep 13 14:04:22 2017 +0800
 
-    mac80211: backport an upstream fix for queue start/stop handling
+    ramips: fix used MAC addresses for Phicomm K2P
+    

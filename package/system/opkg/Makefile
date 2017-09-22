@@ -73,7 +73,7 @@ endef
 
 TARGET_CFLAGS += -ffunction-sections -fdata-sections -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64
 EXTRA_CFLAGS += $(TARGET_CPPFLAGS)
-TARGET_LDFLAGS+=$(if $(CONFIG_TARGET_mipselsf),--static)
+#!!!TARGET_LDFLAGS + =$(if $(CONFIG_TARGET_mipselsf),--static)
 
 CONFIGURE_ARGS += \
 	--disable-curl \

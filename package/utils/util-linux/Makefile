@@ -177,7 +177,7 @@ endef
 define Package/dmesg
 $(call Package/util-linux/Default)
   TITLE:=print or control the kernel ring buffer
-  DEPENDS:= +libncursesw
+  DEPENDS:= +libncursesw +USE_UCLIBC:librt
 endef
 
 define Package/dmesg/description

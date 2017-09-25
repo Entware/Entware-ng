@@ -27,6 +27,7 @@ define Package/libcyassl
   SECTION:=libs
   SUBMENU:=SSL
   CATEGORY:=Libraries
+  DEPENDS:=+USE_UCLIBC:libpthread
   TITLE:=CyaSSL library
   URL:=http://www.wolfssl.com/
   MENU:=1

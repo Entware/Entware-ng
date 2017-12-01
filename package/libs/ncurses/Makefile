@@ -150,8 +150,6 @@ grep -q "^export TERMINFO" /opt/etc/profile || echo "export TERMINFO=/opt/share/
 endef
 
 define Package/libncursesw/install
-	$(INSTALL_DIR) $(1)/opt/include $(1)/opt/include/ncursesw
-	$(CP) $(PKG_INSTALL_DIR)/opt/include/* $(1)/opt/include/ncursesw
 	$(INSTALL_DIR) $(1)/opt/lib
 	for lib in ncurses panel menu form; do \
 		$(CP) $(PKG_INSTALL_DIR)/opt/lib/lib$$$${lib}w.so* $(1)/opt/lib/; \
@@ -159,8 +157,8 @@ define Package/libncursesw/install
 endef
 
 define Package/libncurses/install
-	$(INSTALL_DIR) $(1)/opt/include $(1)/opt/include/ncurses
-	$(CP) $(PKG_INSTALL_DIR)/opt/include/* $(1)/opt/include/ncurses
+	$(INSTALL_DIR) $(1)/opt/include
+	$(CP) $(PKG_INSTALL_DIR)/opt/include/* $(1)/opt/include
 	$(INSTALL_DIR) $(1)/opt/lib
 	ln -s libncurses.so.6.0 $(1)/opt/lib/libcurses.so
 	for lib in ncurses panel menu form; do \

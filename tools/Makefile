@@ -7,7 +7,7 @@
 # Main makefile for the host tools
 #
 # Entware note: some tools (image and kernel related) that we do not need are removed
-#               other tools go 
+#               other tools go and wl500 kernel sources are added
 curdir:=tools
 
 # subdirectories to descend into
@@ -26,6 +26,7 @@ tools-y += sstrip
 tools-y += quilt
 tools-y += mm-macros missing-macros cmake scons bc findutils gengetopt patchelf
 tools-y += mtools
+tools-$(CONFIG_TARGET_mipselsf) += wl500g-kernel
 tools-y += lzma
 tools-$(BUILD_ISL) += isl
 tools-y += go-src

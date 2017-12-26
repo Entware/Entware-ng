@@ -63,17 +63,14 @@ config USES_TARGZ
 config USES_CPIOGZ
 	bool
 
-config USES_MINOR
-	bool
-
 config USES_UBIFS
 	bool
 	select NAND_SUPPORT
 
-config LOW_MEMORY_FOOTPRINT
+config PROFILE_KCONFIG
 	bool
 
-config SMALL_FLASH
+config LOW_MEMORY_FOOTPRINT
 	bool
 
 config NOMMU
@@ -90,9 +87,6 @@ config NAND_SUPPORT
 	bool
 
 config ARCH_64BIT
-	bool
-
-config VIRTIO_SUPPORT
 	bool
 
 # Architecture selection
@@ -118,6 +112,12 @@ config arm
 
 config armeb
 	select BIG_ENDIAN
+	bool
+
+config arm_v4
+	bool
+
+config arm_v5
 	bool
 
 config arm_v6

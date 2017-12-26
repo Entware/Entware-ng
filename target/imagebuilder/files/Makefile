@@ -56,7 +56,10 @@ PACKAGE_DIR:=$(TOPDIR)/packages
 LISTS_DIR:=$(subst $(space),/,$(patsubst %,..,$(subst /,$(space),$(TARGET_DIR))))$(DL_DIR)
 OPKG:= \
   IPKG_NO_SCRIPT=1 \
+  IPKG_TMP="$(TMP_DIR)/ipkgtmp" \
   IPKG_INSTROOT="$(TARGET_DIR)" \
+  IPKG_CONF_DIR="$(TMP_DIR)" \
+  IPKG_OFFLINE_ROOT="$(TARGET_DIR)" \
   $(STAGING_DIR_HOST)/bin/opkg \
 	-f $(TOPDIR)/repositories.conf \
 	--force-depends \
@@ -69,16 +72,20 @@ OPKG:= \
 	--add-arch all:100 \
 	--add-arch $(ARCH_PACKAGES):200
 
+define Profile
+  $(eval $(call Profile/Default))
+  $(eval $(call Profile/$(1)))
+  ifeq ($(USER_PROFILE),)
+    USER_PROFILE:=$(1)
+  endif
+  $(1)_NAME:=$(NAME)
+  $(1)_PACKAGES:=$(PACKAGES)
+  PROFILE_NAMES += $(1)
+  PROFILE_LIST += \
+  	echo '$(1):'; [ -z '$(NAME)' ] || echo '	$(NAME)'; echo '	Packages: $(PACKAGES)';
+endef
+
 include $(INCLUDE_DIR)/target.mk
--include .profiles.mk
-
-USER_PROFILE ?= $(firstword $(PROFILE_NAMES))
-PROFILE_LIST = $(foreach p,$(PROFILE_NAMES), \
-	echo '$(patsubst DEVICE_%,%,$(p)):'; $(if $($(p)_NAME),echo '    $(subst ','"'"',$($(p)_NAME))'; ) echo '    Packages: $($(p)_PACKAGES)'; \
-)
-
-.profiles.mk: .targetinfo
-	$(SCRIPT_DIR)/target-metadata.pl profile_mk $< '$(BOARD)$(if $(SUBTARGET),/$(SUBTARGET))' > $@
 
 staging_dir/host/.prereq-build: include/prereq-build.mk
 	mkdir -p tmp
@@ -101,7 +108,7 @@ _call_info: FORCE
 	echo 'Available Profiles:'
 	echo; $(PROFILE_LIST)
 
-BUILD_PACKAGES:=$(USER_PACKAGES) $(sort $(DEFAULT_PACKAGES) $($(USER_PROFILE)_PACKAGES) kernel)
+BUILD_PACKAGES:=$(sort $(DEFAULT_PACKAGES) $(USER_PACKAGES) $($(USER_PROFILE)_PACKAGES) kernel)
 # "-pkgname" in the package list means remove "pkgname" from the package list
 BUILD_PACKAGES:=$(filter-out $(filter -%,$(BUILD_PACKAGES)) $(patsubst -%,%,$(filter -%,$(BUILD_PACKAGES))),$(BUILD_PACKAGES))
 PACKAGES:=
@@ -125,7 +132,6 @@ ifneq ($(USER_FILES),)
 endif
 	$(MAKE) package_postinst
 	$(MAKE) build_image
-	$(MAKE) checksum
 
 package_index: FORCE
 	@echo
@@ -171,11 +177,6 @@ build_image: FORCE
 	$(NO_TRACE_MAKE) -C target/linux/$(BOARD)/image install TARGET_BUILD=1 IB=1 EXTRA_IMAGE_NAME="$(EXTRA_IMAGE_NAME)" \
 		$(if $(USER_PROFILE),PROFILE="$(USER_PROFILE)")
 
-checksum: FORCE
-	@echo
-	@echo Calculating checksums...
-	@$(call sha256sums,$(BIN_DIR))
-
 clean:
 	rm -rf $(TMP_DIR) $(DL_DIR) $(TARGET_DIR) $(BIN_DIR)
 
@@ -183,11 +184,9 @@ clean:
 info:
 	(unset PROFILE FILES PACKAGES MAKEFLAGS; $(MAKE) -s _call_info)
 
-PROFILE_FILTER = $(filter DEVICE_$(PROFILE) $(PROFILE),$(PROFILE_NAMES))
-
 image:
 ifneq ($(PROFILE),)
-  ifeq ($(PROFILE_FILTER),)
+  ifeq ($(filter $(PROFILE),$(PROFILE_NAMES)),)
 	@echo 'Profile "$(PROFILE)" does not exist!'
 	@echo 'Use "make info" to get a list of available profile names.'
 	@exit 1
@@ -195,7 +194,7 @@ ifneq ($(PROFILE),)
 endif
 	(unset PROFILE FILES PACKAGES MAKEFLAGS; \
 	$(MAKE) _call_image \
-		$(if $(PROFILE),USER_PROFILE="$(PROFILE_FILTER)") \
+		$(if $(PROFILE),USER_PROFILE="$(PROFILE)") \
 		$(if $(FILES),USER_FILES="$(FILES)") \
 		$(if $(PACKAGES),USER_PACKAGES="$(PACKAGES)") \
 		$(if $(BIN_DIR),BIN_DIR="$(BIN_DIR)"))

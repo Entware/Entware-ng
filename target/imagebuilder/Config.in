@@ -1,5 +1,6 @@
 config IB
-	bool "Build the LEDE Image Builder"
+	bool "Build the OpenWrt Image Builder"
+	depends on !PROFILE_KCONFIG
 	depends on !EXTERNAL_TOOLCHAIN
 	help
 	  This is essentially a stripped-down version of the buildroot
